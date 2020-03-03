@@ -83,6 +83,10 @@ const ProjectState = props => {
         });
     };
 
+    /**
+     * Delete a project
+     * @param {*} projectId
+     */
     const deleteProject = projectId => {
         dispatch({
             type: DELETE_PROJECT,
