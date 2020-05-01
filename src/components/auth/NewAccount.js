@@ -1,39 +1,57 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
+import AlertContext from '../../context/alerts/alertContext';
 
 const NewAccount = () => {
+    // Extract values from context
+    const alertContext = useContext(AlertContext);
+    const { alert, showAlert } = alertContext;
+
     // Stae for Login
     const [user, setUser] = useState({
         name: '',
         email: '',
         password: '',
-        confirm: ''
+        confirm: '',
     });
 
     // Extract data from user
     const { name, email, password, confirm } = user;
-    const onChangeLogin = e => {
+    const onChangeLogin = (e) => {
         setUser({
             ...user,
-            [e.target.name]: e.target.value
+            [e.target.name]: e.target.value,
         });
     };
 
     // User Login
-    const onSubmitForm = e => {
+    const onSubmitForm = (e) => {
         e.preventDefault();
 
         // Validate empty fields
+        if (name.trim() === '' || email.trim() === '' || password.trim() === '' || confirm.trim() === '') {
+            showAlert('Todos los campos son obligatorios', 'alerta-error');
+            return;
+        }
 
         // Pass min 6 chars
+        if (password.length < 6) {
+            showAlert('El password debe ser de almenos 6 caracteres', 'alerta-error');
+            return;
+        }
 
         // Verify two password equals
+        if (password !== confirm) {
+            showAlert('Las contraseñas no coinciden', 'alert-error');
+            return;
+        }
 
         // Pass to action
     };
 
     return (
         <div className="form-usuario">
+            {alert ? <div className={`alerta ${alert.category}`}>{alert.msg}</div> : null}
             <div className="contenedor-form sombra-dark">
                 <h1>Crear una cuenta</h1>
                 <form onSubmit={onSubmitForm}>
@@ -46,6 +64,7 @@ const NewAccount = () => {
                             placeholder="Tu Nombre"
                             value={name}
                             onChange={onChangeLogin}
+                            autoComplete="off"
                         ></input>
                     </div>
                     <div className="campo-form">
@@ -55,6 +74,7 @@ const NewAccount = () => {
                             id="email"
                             name="email"
                             placeholder="Tu Email"
+                            autoComplete="off"
                             value={email}
                             onChange={onChangeLogin}
                         ></input>
@@ -65,9 +85,10 @@ const NewAccount = () => {
                             type="password"
                             id="password"
                             name="password"
-                            value={password}
+                            autoComplete="new-password"
                             placeholder="Tu Password"
                             onChange={onChangeLogin}
+                            value={password}
                         ></input>
                     </div>
                     <div className="campo-form">
@@ -76,6 +97,7 @@ const NewAccount = () => {
                             type="password"
                             id="confirm"
                             name="confirm"
+                            autoComplete="new-password"
                             value={confirm}
                             placeholder="Repite tu password"
                             onChange={onChangeLogin}
