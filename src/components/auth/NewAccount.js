@@ -1,11 +1,27 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import AlertContext from '../../context/alerts/alertContext';
+import AuthContext from '../../context/auth/authContext';
 
-const NewAccount = () => {
+const NewAccount = (props) => {
     // Extract values from context
     const alertContext = useContext(AlertContext);
     const { alert, showAlert } = alertContext;
+
+    // Extract values from Auth context
+    const authContext = useContext(AuthContext);
+    const { registerUser, message, authenticated } = authContext;
+
+    // In case of user is authenticated or registered or is a duplicate registration, reload component
+    useEffect(() => {
+        if (authenticated) {
+            props.history.push('/projects');
+        }
+
+        if (message) {
+            showAlert(message.msg, 'alerta-error');
+        }
+    }, [message, authenticated, props.history]);
 
     // Stae for Login
     const [user, setUser] = useState({
@@ -47,6 +63,11 @@ const NewAccount = () => {
         }
 
         // Pass to action
+        registerUser({
+            name,
+            email,
+            password,
+        });
     };
 
     return (
