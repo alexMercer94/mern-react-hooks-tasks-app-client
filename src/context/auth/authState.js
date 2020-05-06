@@ -69,6 +69,34 @@ const AuthState = (props) => {
         }
     };
 
+    /**
+     * Login user
+     * @param payload Request data
+     */
+    const login = async (payload) => {
+        try {
+            const response = await AxiosClient.post(EApi.postLogin, payload);
+
+            dispatch({
+                type: LOGIN_SUCCESS,
+                payload: response.data,
+            });
+
+            // Get user
+            userAuthenticated();
+        } catch (error) {
+            const alert = {
+                msg: error.response.data.msg,
+                category: 'alerta-error',
+            };
+
+            dispatch({
+                type: LOGIN_ERROR,
+                payload: alert,
+            });
+        }
+    };
+
     return (
         <AuthContext.Provider
             value={{
@@ -77,6 +105,8 @@ const AuthState = (props) => {
                 user: state.user,
                 message: state.message,
                 registerUser,
+                login,
+                userAuthenticated,
             }}
         >
             {props.children}

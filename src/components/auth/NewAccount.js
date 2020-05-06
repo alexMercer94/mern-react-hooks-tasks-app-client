@@ -19,7 +19,7 @@ const NewAccount = (props) => {
         }
 
         if (message) {
-            showAlert(message.msg, 'alerta-error');
+            showAlert(message.msg, message.category);
         }
     }, [message, authenticated, props.history]);
 

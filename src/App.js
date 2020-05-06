@@ -7,10 +7,15 @@ import ProjectState from './context/projects/projectState';
 import TaskState from './context/tasks/taskState';
 import AlertState from './context/alerts/alertState';
 import AuthState from './context/auth/authState';
+import tokenAuth from './config/tokenAuth';
+
+// Check if exists Token
+const token = localStorage.getItem('token');
+if (token) {
+    tokenAuth(token);
+}
 
 function App() {
-    console.log(process.env.REACT_APP_BACKED_URL);
-
     return (
         <ProjectState>
             <TaskState>
