@@ -20,7 +20,7 @@ const TasksList = () => {
     const [actualProject] = project;
 
     const onClickDelete = () => {
-        deleteProject(actualProject.id);
+        deleteProject(actualProject._id);
     };
 
     return (
@@ -33,7 +33,7 @@ const TasksList = () => {
                     </li>
                 ) : (
                     <TransitionGroup>
-                        {projectTasks.map(task => (
+                        {projectTasks.map((task) => (
                             <CSSTransition key={task.id} timeout={200} classNames="tarea">
                                 <Task task={task}></Task>
                             </CSSTransition>

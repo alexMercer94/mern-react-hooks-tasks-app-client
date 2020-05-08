@@ -7,23 +7,19 @@ import {
     ADD_PROJECT,
     VALIDATE_FORM,
     ACTUAL_PROJECT,
-    DELETE_PROJECT
+    DELETE_PROJECT,
+    PROJECT_ERROR,
 } from '../../types/Index';
-import { v4 as uuidv4 } from 'uuid';
+import AxiosClient from '../../config/axios';
+import EApi from '../../enums/api';
 
-const ProjectState = props => {
-    const projects = [
-        { id: 1, name: 'Virtual Store' },
-        { id: 2, name: 'Intranet' },
-        { id: 3, name: 'Diseño de Sitio WEB' },
-        { id: 4, name: 'MERN' }
-    ];
-
+const ProjectState = (props) => {
     const initialState = {
         form: false,
         projects: [],
         errorForm: false,
-        project: null
+        project: null,
+        message: null,
     };
 
     // Dispatch in order to execute the actions
@@ -35,32 +31,59 @@ const ProjectState = props => {
      */
     const showForm = () => {
         dispatch({
-            type: FORM_PROJECT
+            type: FORM_PROJECT,
         });
     };
 
     /**
      * Get all projects
      */
-    const getProjects = () => {
-        dispatch({
-            type: GET_PROJECTS,
-            payload: projects
-        });
+    const getProjects = async () => {
+        try {
+            const response = await AxiosClient.get(EApi.getProjects);
+
+            dispatch({
+                type: GET_PROJECTS,
+                payload: response.data.projects,
+            });
+        } catch (error) {
+            const alert = {
+                msg: 'Hubo un error',
+                category: 'alerta-error',
+            };
+
+            dispatch({
+                type: PROJECT_ERROR,
+                payload: alert,
+            });
+        }
     };
 
     /**
      * Add a project
      * @param {*} project
      */
-    const addProject = project => {
-        project.id = uuidv4();
+    const addProject = async (project) => {
+        try {
+            const response = await AxiosClient.post(EApi.postCreateProject, project);
+            console.log(response);
 
-        // Insert project in state
-        dispatch({
-            type: ADD_PROJECT,
-            payload: project
-        });
+            // Insert project in state
+            dispatch({
+                type: ADD_PROJECT,
+                payload: response.data,
+            });
+        } catch (error) {
+            const alert = {
+                msg: 'Hubo un error',
+                category: 'alerta-error',
+            };
+
+            dispatch({
+                type: PROJECT_ERROR,
+                payload: alert,
+            });
+        }
     };
 
     /**
@@ -68,7 +91,7 @@ const ProjectState = props => {
      */
     const showError = () => {
         dispatch({
-            type: VALIDATE_FORM
+            type: VALIDATE_FORM,
         });
     };
 
@@ -76,10 +99,10 @@ const ProjectState = props => {
      * Select actual project that user selected
      * @param {*} project
      */
-    const actualProject = projectId => {
+    const actualProject = (projectId) => {
         dispatch({
             type: ACTUAL_PROJECT,
-            payload: projectId
+            payload: projectId,
         });
     };
 
@@ -87,11 +110,24 @@ const ProjectState = props => {
      * Delete a project
      * @param {*} projectId
      */
-    const deleteProject = projectId => {
-        dispatch({
-            type: DELETE_PROJECT,
-            payload: projectId
-        });
+    const deleteProject = async (projectId) => {
+        try {
+            await AxiosClient.delete(`${EApi.deleteProject}/${projectId}`);
+            dispatch({
+                type: DELETE_PROJECT,
+                payload: projectId,
+            });
+        } catch (error) {
+            const alert = {
+                msg: 'Hubo un error',
+                category: 'alerta-error',
+            };
+
+            dispatch({
+                type: PROJECT_ERROR,
+                payload: alert,
+            });
+        }
     };
 
     return (
@@ -101,12 +137,13 @@ const ProjectState = props => {
                 form: state.form,
                 errorForm: state.errorForm,
                 project: state.project,
+                message: state.message,
                 showForm,
                 getProjects,
                 addProject,
                 showError,
                 actualProject,
-                deleteProject
+                deleteProject,
             }}
         >
             {props.children}

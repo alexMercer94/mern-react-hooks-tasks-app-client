@@ -16,7 +16,7 @@ const Project = ({ project }) => {
      * Select a project and setTasks in state
      * @param {*} id
      */
-    const selectProject = id => {
+    const selectProject = (id) => {
         // Fixed actual project
         actualProject(id);
         // Filter tasks of selected project
@@ -25,7 +25,7 @@ const Project = ({ project }) => {
 
     return (
         <li>
-            <button type="button" className="btn btn-blank" onClick={() => selectProject(project.id)}>
+            <button type="button" className="btn btn-blank" onClick={() => selectProject(project._id)}>
                 {project.name}
             </button>
         </li>
