@@ -6,30 +6,20 @@ import {
     ADD_TASK,
     VALIDATE_TASK,
     DELETE_TASK,
-    STATE_TASK,
     ACTUAL_TASK,
     UPDATE_TASK,
-    CLEAR_TASK
+    CLEAR_TASK,
 } from '../../types/Index';
-import { v4 as uuidv4 } from 'uuid';
+import AxiosClient from '../../config/axios';
+import EApi from '../../enums/api';
 
-const TaskState = props => {
+const ID_TASK = ':task_id:';
+
+const TaskState = (props) => {
     const initialState = {
-        tasks: [
-            { id: 1, name: 'Elegir plataforma', state: true, projectId: 1 },
-            { id: 2, name: 'Elegir color', state: false, projectId: 2 },
-            { id: 3, name: 'Elegir plataformas de pago', state: false, projectId: 3 },
-            { id: 4, name: 'Elegir Hosting', state: true, projectId: 4 },
-            { id: 5, name: 'Elegir plataforma', state: true, projectId: 1 },
-            { id: 6, name: 'Elegir color', state: false, projectId: 2 },
-            { id: 7, name: 'Elegir plataformas de pago', state: false, projectId: 3 },
-            { id: 8, name: 'Elegir plataforma', state: true, projectId: 4 },
-            { id: 9, name: 'Elegir color', state: false, projectId: 2 },
-            { id: 10, name: 'Elegir plataformas de pago', state: false, projectId: 1 }
-        ],
-        projectTasks: null,
+        projectTasks: [],
         errorTask: false,
-        taskSelected: null
+        taskSelected: null,
     };
 
     // Create dispatch and state
@@ -39,25 +29,51 @@ const TaskState = props => {
 
     /**
      * Get project's tasks
-     * @param {*} projectId Project ID
+     * @param {*} project Project ID
      */
-    const getTasks = projectId => {
-        dispatch({
-            type: PROJECT_TASKS,
-            payload: projectId
-        });
+    const getTasks = async (project) => {
+        try {
+            const response = await AxiosClient.get(EApi.getTasks, { params: { project } });
+
+            dispatch({
+                type: PROJECT_TASKS,
+                payload: response.data.tasks,
+            });
+        } catch (error) {
+            console.log(error);
+        }
     };
 
     /**
      * Add a task to selected project
      * @param {*} task Task to add
      */
-    const addTask = task => {
-        task.id = uuidv4();
-        dispatch({
-            type: ADD_TASK,
-            payload: task
-        });
+    const addTask = async (task) => {
+        try {
+            const response = await AxiosClient.post(EApi.postAddTask, task);
+            dispatch({
+                type: ADD_TASK,
+                payload: response.data.task,
+            });
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    /**
+     * Update a selected task
+     * @param {*} task
+     */
+    const updateTask = async (task) => {
+        try {
+            const response = await AxiosClient.put(EApi.updateTask.replace(ID_TASK, task._id), task);
+            dispatch({
+                type: UPDATE_TASK,
+                payload: response.data.task,
+            });
+        } catch (error) {
+            console.log(error);
+        }
     };
 
     /**
@@ -65,48 +81,35 @@ const TaskState = props => {
      */
     const validateTask = () => {
         dispatch({
-            type: VALIDATE_TASK
+            type: VALIDATE_TASK,
         });
     };
 
     /**
      * Delete a task by ID
      * @param {*} taskId Task ID
+     * @param {*} actualProjectId Actual project ID selected
      */
-    const deleteTaskById = taskId => {
-        dispatch({
-            type: DELETE_TASK,
-            payload: taskId
-        });
-    };
+    const deleteTaskById = async (taskId, actualProjectId) => {
+        try {
+            await AxiosClient.delete(EApi.deleteTask.replace(ID_TASK, taskId), {
+                params: { project: actualProjectId },
+            });
 
-    /**
-     * Change task's state to `complete or incomplete`
-     * @param {*} task
-     */
-    const changeStateTask = task => {
-        dispatch({
-            type: STATE_TASK,
-            payload: task
-        });
+            dispatch({
+                type: DELETE_TASK,
+                payload: taskId,
+            });
+        } catch (error) {
+            console.log(error);
+        }
     };
 
     // Extract actual task for edit
-    const saveActualTask = task => {
+    const saveActualTask = (task) => {
         dispatch({
             type: ACTUAL_TASK,
-            payload: task
-        });
-    };
-
-    /**
-     * Update a selected task
-     * @param {*} task
-     */
-    const updateTask = task => {
-        dispatch({
-            type: UPDATE_TASK,
-            payload: task
+            payload: task,
         });
     };
 
@@ -115,14 +118,13 @@ const TaskState = props => {
      */
     const clearTask = () => {
         dispatch({
-            type: CLEAR_TASK
+            type: CLEAR_TASK,
         });
     };
 
     return (
         <TaskContext.Provider
             value={{
-                tasks: state.tasks,
                 projectTasks: state.projectTasks,
                 errorTask: state.errorTask,
                 taskSelected: state.taskSelected,
@@ -130,10 +132,9 @@ const TaskState = props => {
                 addTask,
                 validateTask,
                 deleteTaskById,
-                changeStateTask,
                 saveActualTask,
                 updateTask,
-                clearTask
+                clearTask,
             }}
         >
             {props.children}

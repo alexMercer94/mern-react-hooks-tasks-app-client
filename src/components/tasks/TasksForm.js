@@ -17,14 +17,14 @@ const TasksForm = () => {
             setTask(taskSelected);
         } else {
             setTask({
-                name: ''
+                name: '',
             });
         }
     }, [taskSelected]);
 
     // Form's state
     const [task, setTask] = useState({
-        name: ''
+        name: '',
     });
 
     // Extract project's name
@@ -40,10 +40,10 @@ const TasksForm = () => {
      * Read form's data
      * @param {*} e
      */
-    const handleChange = e => {
+    const handleChange = (e) => {
         setTask({
             ...task,
-            [e.target.name]: e.target.value
+            [e.target.name]: e.target.value,
         });
     };
 
@@ -51,7 +51,7 @@ const TasksForm = () => {
      * Submit form for to add task
      * @param {*} e
      */
-    const onSubmitForm = e => {
+    const onSubmitForm = (e) => {
         e.preventDefault();
 
         // Validate
@@ -63,8 +63,7 @@ const TasksForm = () => {
         // Verify if user is editing a task or adding
         if (taskSelected === null) {
             // Add new task to task's state
-            task.projectId = actualProject.id;
-            task.state = false;
+            task.project = actualProject._id;
             addTask(task);
         } else {
             // Update task selected
@@ -75,11 +74,11 @@ const TasksForm = () => {
         }
 
         // Get and filter of actual project's tasks
-        getTasks(actualProject.id);
+        getTasks(actualProject._id);
 
         // Restart form
         setTask({
-            name: ''
+            name: '',
         });
     };
 

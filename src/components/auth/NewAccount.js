@@ -21,6 +21,7 @@ const NewAccount = (props) => {
         if (message) {
             showAlert(message.msg, message.category);
         }
+        // eslint-disable-next-line
     }, [message, authenticated, props.history]);
 
     // Stae for Login

@@ -9,7 +9,7 @@ const Task = ({ task }) => {
 
     // Get data from task context
     const tasksContext = useContext(TaskContext);
-    const { getTasks, deleteTaskById, changeStateTask, saveActualTask, clearTask } = tasksContext;
+    const { getTasks, deleteTaskById, updateTask, saveActualTask, clearTask } = tasksContext;
 
     // Extract actual project from context
     const [proyectActual] = project;
@@ -18,31 +18,31 @@ const Task = ({ task }) => {
      * Delete task when button is clicked
      * @param {*} id
      */
-    const deleteTask = id => {
-        deleteTaskById(id);
+    const deleteTask = (id) => {
+        deleteTaskById(id, proyectActual._id);
         clearTask();
-        getTasks(proyectActual.id);
+        getTasks(proyectActual._id);
     };
 
     /**
      * Change task's state
      * @param {*} task
      */
-    const changeState = task => {
+    const changeState = (task) => {
         if (task.state) {
             task.state = false;
         } else {
             task.state = true;
         }
 
-        changeStateTask(task);
+        updateTask(task);
     };
 
     /**
      * Select a task for edit
      * @param {*} task
      */
-    const selectTask = task => {
+    const selectTask = (task) => {
         saveActualTask(task);
     };
 
@@ -64,7 +64,7 @@ const Task = ({ task }) => {
                 <button type="button" className="btn btn-primario" onClick={() => selectTask(task)}>
                     Editar
                 </button>
-                <button type="button" className="btn btn-secundario" onClick={() => deleteTask(task.id)}>
+                <button type="button" className="btn btn-secundario" onClick={() => deleteTask(task._id)}>
                     Eliminar
                 </button>
             </div>
