@@ -1,4 +1,6 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## MERN Task App - React
+
+![alt text](https://raw.githubusercontent.com/alexMercer94/mern-react-hooks-tasks-app-client/master/MERN-Tasks-React-App.JPG)
 
 ## Available Scripts
 
